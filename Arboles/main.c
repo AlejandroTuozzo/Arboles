@@ -9,9 +9,12 @@ struct Nodo {
 
 struct Nodo *raiz = NULL;
 
-int existeElemento(int valor)
+//Busca si el elemento existe partiendo desde el nodo pasado por parámetro
+int existeElemento(int valor, struct Nodo *nodoIndice)
 {
-    struct Nodo *nodoIndice = raiz;
+    if (nodoIndice == NULL)
+        nodoIndice = raiz;
+
     while (nodoIndice != NULL)
     {
         if (valor == nodoIndice->valor)
@@ -25,9 +28,10 @@ int existeElemento(int valor)
     return 0;
 }
 
+//Inserta un valor ordenado
 void insertar(int valor)
 {
-    if (!existeElemento(valor))
+    if (!existeElemento(valor, raiz))
     {
         struct Nodo *nuevoNodo;
 
@@ -58,6 +62,8 @@ void insertar(int valor)
                 nodoAnterior->der = nuevoNodo;
         }
     }
+    else
+        printf("El elemento ya existe!");
 }
 
 void recorrerPreOrden(struct Nodo *nodoIndice)
@@ -90,6 +96,7 @@ void recorrerPostOrden(struct Nodo *nodoIndice)
     }
 }
 
+//Borra todo partiendo de un Nodo determinado hacia sus hijos
 void borrar(struct Nodo *nodoIndice)
 {
     if (nodoIndice != NULL)
@@ -100,19 +107,20 @@ void borrar(struct Nodo *nodoIndice)
     }
 }
 
-void borrarMinimo(struct Nodo *raiz)
+//Borra el elemento más chico desde el nodo pasado por parámetro
+struct Nodo* borrarMinimo(struct Nodo *nodo)
 {
-     if (raiz != NULL) {
+     if (nodo != NULL) {
          struct Nodo *nodoBorrar;
-         if (raiz->izq == NULL)
+         if (nodo->izq == NULL)
          {
-             nodoBorrar = raiz;
-             raiz = raiz->der;
+             nodoBorrar = nodo;
+             nodo = nodo->der;
              free(nodoBorrar);
          }
          else {
-             struct Nodo *nodoAnterior = raiz;
-             struct Nodo *nodoIndice = raiz->izq;
+             struct Nodo *nodoAnterior = nodo;
+             struct Nodo *nodoIndice = nodo->izq;
              while (nodoIndice->izq != NULL)
              {
                  nodoAnterior = nodoIndice;
@@ -124,28 +132,42 @@ void borrarMinimo(struct Nodo *raiz)
      }
  }
 
-/*struct Nodo BorrarElemento(int elemento, struct Nodo *raiz)
+ //Busca el mímimo elemento partiendo de un Nodo
+struct Nodo* buscarMinimo(struct Nodo *nodo)
 {
-	//if(raiz == NULL)
-	//	throw new ItemNotFoundException(x.toString());
+    if(nodo != NULL)
+        while(nodo->izq != NULL)
+            nodo = nodo->der;
 
-	if (elemento < raiz->valor)
-		raiz->izq = BorrarElemento(elemento, raiz->izq);
-	else if(elemento > raiz->valor)
-		raiz->der = BorrarElemento(elemento, raiz->der);
-	else if(raiz->izq != NULL && raiz->der != NULL) //Nodo con dos hijos
+    return nodo;
+}
+
+//Borra un elemento partiendo de un Nodo
+struct Nodo* BorrarElemento(int elemento, struct Nodo *nodo)
+{
+    if (nodo == NULL)
+        nodo = raiz;
+
+    if (!existeElemento(elemento, NULL))
+		printf("No se encontró el valor!");
+
+	if (elemento < nodo->valor)
+		nodo->izq = BorrarElemento(elemento, nodo->izq);
+	else if(elemento > nodo->valor)
+		nodo->der = BorrarElemento(elemento, nodo->der);
+	else if(nodo->izq != NULL && nodo->der != NULL) //Nodo con dos hijos
 	{
-		raiz->valor = buscarMinimo(raiz->der)->valor;
-		raiz->der = borrarMinimo(raiz->der);
+		nodo->valor = buscarMinimo(nodo->der)->valor;
+		nodo->der = borrarMinimo(nodo->der);
 	}
 	else
-		if (raiz->izq != NULL)
-            raiz = raiz->izq;
+		if (nodo->izq != NULL)
+            nodo = nodo->izq;
 		else
-            raiz = raiz->der;
+            nodo = nodo->der;
 
-	return raiz;
-}*/
+	return nodo;
+}
 
 int main()
 {
